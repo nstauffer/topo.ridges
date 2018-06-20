@@ -113,7 +113,7 @@ elev.density.df <- function(raster = NULL,
   min.elev <- min(elev.df.tall$elev, na.rm = TRUE)
 
   # Use that minimum to convert the elevations to relative elevations
-  elev.df.tall$elev[!is.na(elev.df.tall$elev)] <- elev.df.tall$elev[!is.na(elev.df.tall$elev)] - min.elev + 1
+  elev.df.tall$elev[!is.na(elev.df.tall$elev)] <- elev.df.tall$elev[!is.na(elev.df.tall$elev)] - min.elev
 
   # Replace NAs
   elev.df.tall$elev[is.na(elev.df.tall$elev)] <- na.sub
