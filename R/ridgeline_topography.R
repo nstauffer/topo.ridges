@@ -231,12 +231,20 @@ topo.ridges.plot <- function(data,
                                     size = attributes$size,
                                     fill = attributes$fill) +
       ggplot2::scale_color_continuous(low = attributes$line.gradient.start, high = attributes$line.gradient.end) +
-      ggplot2::theme(panel.background = ggplot2::element_rect(fill = attributes$fill),
+      ggplot2::theme(plot.background = ggplot2::element_rect(fill = attributes$fill),
+                     panel.background = ggplot2::element_rect(fill = attributes$fill,
+                                                              color = attributes$fill),
+                     panel.border = ggplot2::element_blank(),
                      panel.grid = ggplot2::element_blank(),
+                     panel.spacing = ggplot2::unit(c(0,0,0,0),"mm"),
+                     axis.line = ggplot2::element_blank(),
                      axis.title = ggplot2::element_blank(),
                      axis.ticks = ggplot2::element_blank(),
                      axis.text = ggplot2::element_blank(),
-                     legend.position = "none")
+                     plot.margin = ggplot2::unit(c(0,0,0,0),"mm"),
+                     legend.position = "none") +
+      ggplot2::labs(x = NULL,
+                    y = NULL)
   } else {
     plot <- ggplot2::ggplot(data) +
       ggridges::geom_density_ridges(ggplot2::aes(x = x,
