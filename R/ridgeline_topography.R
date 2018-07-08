@@ -193,8 +193,11 @@ elev.density.df <- function(raster = NULL,
 #' @param size Numeric value. Determines the weight of ridgelines; passed to \code{ggridges::geom_density_ridges(ggplot2::aes(size))}. Defaults to \code{1}.
 #' @param fill Character string. The color for the background of the plot. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{geom_density_ridges(fill)} and \code{theme(panel.background = element_rect(fill))}. Defaults to \code{"light blue"}.
 #' @param line.gradient.start Character string. The color for the foreground ridgeline of the plot. Used as the start of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(low)}. Defaults to \code{"white"}.
+# #' @param line.gradient.mid Character string. The color for the foreground ridgeline of the plot. Used as the midpoint of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(low)}. Defaults to \code{"white"}.
 #' @param line.gradient.end Character string. The color for the backmost ridgeline of the plot. Used as the end of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(high)}. Defaults to \code{"white"}.
+# #' @param gradient.midpoint Optional numeric value. The y value that corresponds to the color \code{line.gradient.mid}. If \code{NULL} then the mean of the unique y values will be used. Defaults to \code{NULL}.
 #' @param invert.y Logical. If \code{TRUE} then all y values will by multiplied by -1. Defaults to \code{FALSE}.
+#' @param invert.x Logical. If \code{TRUE} then all x values will by multiplied by -1. Defaults to \code{FALSE}.
 #' @return A ggplot object.
 #' @export
 topo.ridges.plot <- function(data,
@@ -204,8 +207,11 @@ topo.ridges.plot <- function(data,
                              size = 1,
                              fill = "light blue",
                              line.gradient.start = "white",
+                             # line.gradient.mid = "white",
                              line.gradient.end = "white",
-                             invert.y = FALSE){
+                             # gradient.midpoint = NULL,
+                             invert.y = FALSE,
+                             invert.x = FALSE){
   if (isFALSE(is.data.frame(data))) {
     stop("The data must be a data frame.")
   } else {
@@ -216,52 +222,52 @@ topo.ridges.plot <- function(data,
     data$y <- data[[y.variable]]
   }
 
+  if (invert.y) {
+    data$y <- data$y * -1
+  }
+  if (invert.x) {
+    data$x <- data$x * -1
+  }
+
+  # if (is.null(gradient.midpoint)) {
+  #   gradient.midpoint <- mean(data$y)
+  # }
+
   attributes <- list(scale = scale,
                      size = size,
                      fill = fill,
+                     # gradient.midpoint,
                      line.gradient.start = line.gradient.start,
+                     # line.gradient.mid = line.gradient.mid,
                      line.gradient.end = line.gradient.end)
-  if (invert.y) {
-    plot <- ggplot2::ggplot(data) +
-      ggridges::geom_density_ridges(ggplot2::aes(x = x,
-                                                 y = -y,
-                                                 group = -y,
-                                                 scale = attributes$scale,
-                                                 color = -y),
-                                    size = attributes$size,
-                                    fill = attributes$fill) +
-      ggplot2::scale_color_continuous(low = attributes$line.gradient.start, high = attributes$line.gradient.end) +
-      ggplot2::theme(plot.background = ggplot2::element_rect(fill = attributes$fill),
-                     panel.background = ggplot2::element_rect(fill = attributes$fill,
-                                                              color = attributes$fill),
-                     panel.border = ggplot2::element_blank(),
-                     panel.grid = ggplot2::element_blank(),
-                     panel.spacing = ggplot2::unit(c(0,0,0,0),"mm"),
-                     axis.line = ggplot2::element_blank(),
-                     axis.title = ggplot2::element_blank(),
-                     axis.ticks = ggplot2::element_blank(),
-                     axis.text = ggplot2::element_blank(),
-                     plot.margin = ggplot2::unit(c(0,0,0,0),"mm"),
-                     legend.position = "none") +
-      ggplot2::labs(x = NULL,
-                    y = NULL)
-  } else {
-    plot <- ggplot2::ggplot(data) +
-      ggridges::geom_density_ridges(ggplot2::aes(x = x,
-                                                 y = y,
-                                                 group = y,
-                                                 scale = attributes$scale,
-                                                 color = y),
-                                    size = attributes$size,
-                                    fill = attributes$fill) +
-      ggplot2::scale_color_continuous(low = attributes$line.gradient.start, high = attributes$line.gradient.end) +
-      ggplot2::theme(panel.background = ggplot2::element_rect(fill = attributes$fill),
-                     panel.grid = ggplot2::element_blank(),
-                     axis.title = ggplot2::element_blank(),
-                     axis.ticks = ggplot2::element_blank(),
-                     axis.text = ggplot2::element_blank(),
-                     legend.position = "none")
-  }
+
+  plot <- ggplot2::ggplot(data) +
+    ggridges::geom_density_ridges(ggplot2::aes(x = x,
+                                               y = y,
+                                               group = y,
+                                               scale = attributes$scale,
+                                               color = y),
+                                  size = attributes$size,
+                                  fill = attributes$fill) +
+    ggplot2::scale_color_continuous(low = attributes$line.gradient.start, high = attributes$line.gradient.end) +
+    # ggplot2::scale_color_gradient2(low = attributes$line.gradient.start,
+    #                                mid = attributes$line.gradient.mid,
+    #                                high = attributes$line.gradient.high,
+    #                                midpoint = attributes$gradient.midpoint) +
+    ggplot2::theme(plot.background = ggplot2::element_rect(fill = attributes$fill),
+                   panel.background = ggplot2::element_rect(fill = attributes$fill,
+                                                            color = attributes$fill),
+                   panel.border = ggplot2::element_blank(),
+                   panel.grid = ggplot2::element_blank(),
+                   panel.spacing = ggplot2::unit(c(0,0,0,0),"mm"),
+                   axis.line = ggplot2::element_blank(),
+                   axis.title = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   plot.margin = ggplot2::unit(c(0,0,0,0),"mm"),
+                   legend.position = "none") +
+    ggplot2::labs(x = NULL,
+                  y = NULL)
 
   return(plot)
 }
