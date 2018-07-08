@@ -6,7 +6,7 @@
 \usage{
 topo.ridges.plot(data, x.variable = "x", y.variable = "y", scale = 1,
   size = 1, fill = "light blue", line.gradient.start = "white",
-  line.gradient.end = "white", invert.y = FALSE)
+  line.gradient.end = "white", invert.y = FALSE, invert.x = FALSE)
 }
 \arguments{
 \item{data}{Data frame. Must contain variables corresponding to relative coordinates of elevation data. Each observation of a coordinate pair must appear in the data frame a number of times equal to its relative elevation, e.g. a coordinate pair that is twice as high as another should occur two times as many times in the data frame.}
@@ -22,6 +22,8 @@ topo.ridges.plot(data, x.variable = "x", y.variable = "y", scale = 1,
 \item{line.gradient.end}{Character string. The color for the backmost ridgeline of the plot. Used as the end of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(high)}. Defaults to \code{"white"}.}
 
 \item{invert.y}{Logical. If \code{TRUE} then all y values will by multiplied by -1. Defaults to \code{FALSE}.}
+
+\item{invert.x}{Logical. If \code{TRUE} then all x values will by multiplied by -1. Defaults to \code{FALSE}.}
 }
 \value{
 A ggplot object.
