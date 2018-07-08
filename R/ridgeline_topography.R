@@ -93,15 +93,68 @@ elev.density.df <- function(raster = NULL,
   # Convert to a data frame
   elev.df <- as.data.frame(elev.matrix)
 
-  # Remove the "V" in the variable names so that they can be used as coordinates
-  # It's much faster to do this now than once it's tall because the vector is much smaller
-  names(elev.df) <- gsub(names(elev.df), pattern = "V", replacement = "")
+  # Drop the resolution on both axes
+  max.y <- nrow(elev.df)
+  max.x <- ncol(elev.df)
+  # By resolution
+  y.vector.length <- round(max.y*y.resolution)
+  y.vector <- (1:y.vector.length)*round(max.y/y.vector.length)
+  y.vector <- y.vector[y.vector < max.y]
+  x.vector.length <- round(max.x*x.resolution)
+  x.vector <- (1:x.vector.length)*round(max.x/x.vector.length)
+  x.vector <- x.vector[x.vector < max.x]
 
-  # Use the row number as the y coordinate
-  elev.df$y <- 1:nrow(elev.df)
+  # So we can keep the original coordinates and not the new compressed, relative coordinates
+  # names(elev.df) <- paste(1:max.x)
+  # Make the adjustments
+  # elev.df.reduced <- elev.df[, x.vector]
+  # So we can keep the original coordinates and not the new compressed, relative coordinates
+  # elev.df.reduced$y <- 1:max.y
+  # Make the adjustments
+  # elev.df.reduced <- elev.df.reduced[y.vector,]
+  elev.df.reduced <- elev.df[y.vector, x.vector]
+
+  # By n, if relevant
+  if (is.null(n.y)) {
+    y.slice <- 1:nrow(elev.df.reduced)
+  } else {
+    # How many of the indices to drop
+    y.increment <- round((nrow(elev.df.reduced))/n.y)
+
+    # Get only the indices to keep
+    y.slice <- (1:n.y)*y.increment
+
+    # Make sure that all of them are actually indices in the vector
+    y.slice <- y.slice[y.slice <= nrow(elev.df.reduced)]
+  }
+  if (is.null(n.x)) {
+    # x.slice <- 1:(ncol(elev.df.reduced) - 1)
+    x.slice <- 1:ncol(elev.df.reduced)
+  } else {
+    # How many of the indices to drop
+    # x.increment <- round((ncol(x.vector) - 1)/n.x)
+    x.increment <- round(ncol(elev.df.reduced)/n.x)
+
+    # Get only the indices to keep
+    x.slice <- (1:n.x)*x.increment
+
+    # Make sure that all of them are actually indices in the vector
+    # x.slice <- x.slice[x.slice <= (ncol(x.vector) - 1)]
+    x.slice <- x.slice[x.slice <= ncol(elev.df.reduced)]
+  }
+
+  # Make the adjustments
+  # ys <- elev.df.reduced[y.slice, "y"]
+  # elev.df.reduced <- dplyr::select(elev.df.reduced, -y)[y.slice, x.slice]
+  # elev.df.reduced$y <- ys
+  elev.df.reduced <- elev.df.reduced[y.slice, x.slice]
+
+  names(elev.df.reduced) <- paste(1:(ncol(elev.df.reduced)))
+
+  elev.df.reduced$y <- 1:nrow(elev.df.reduced)
 
   # Gather the frame so that we have an x coordinate variable and an elevation variable
-  elev.df.tall <- tidyr::gather(elev.df,
+  elev.df.tall <- tidyr::gather(elev.df.reduced,
                                 key = "x",
                                 value = "elev",
                                 -y)
@@ -118,61 +171,14 @@ elev.density.df <- function(raster = NULL,
   # Replace NAs
   elev.df.tall$elev[is.na(elev.df.tall$elev)] <- na.sub
 
-  # Drop the resolution on both axes
-  # By resolution
-  y.vector.length <- round(max(elev.df.tall$y)*y.resolution)
-  y.vector <- (1:y.vector.length)*round(max(elev.df.tall$y)/y.vector.length)
-  x.vector.length <- round(max(elev.df.tall$x)*x.resolution)
-  x.vector <- (1:x.vector.length)*round(max(elev.df.tall$x)/x.vector.length)
-
-  # Make the adjustments
-  elev.df.tall.reduced <- elev.df.tall[elev.df.tall$y %in% (y.vector) & elev.df.tall$x %in% (x.vector),]
-
-  # By n, if relevant
-  if (is.null(n.y)) {
-    y.vector <- unique(elev.df.tall.reduced$y)
-  } else {
-    # What are the unique y values?
-    y.vector <- unique(elev.df.tall.reduced$y)
-
-    # How many of the indices to drop
-    y.increment <- round(length(y.vector)/n.y)
-
-    # Get only the indices to keep
-    y.slice <- (1:n.y)*y.increment
-
-    # Make sure that all of them are actually indices in the vector
-    y.slice <- y.slice[y.slice <= length(y.vector)]
-
-    # Slice those unique values down by the indices to keep
-    y.vector <- y.vector[y.slice]
-  }
-  if (is.null(n.x)) {
-    x.vector <- unique(elev.df.tall.reduced$x)
-  } else {
-    # What are the unique x values?
-    x.vector <- unique(elev.df.tall.reduced$x)
-
-    # How many of the indices to drop
-    x.increment <- round(length(x.vector)/n.x)
-
-    # Get only the indices to keep
-    x.slice <- (1:n.x)*x.increment
-
-    # Make sure that all of them are actually indices in the vector
-    x.slice <- x.slice[x.slice <= length(x.vector)]
-
-    # Slice those unique values down by the indices to keep
-    x.vector <- x.vector[x.slice]
-  }
-
-  # Make the adjustments
-  elev.df.tall.reduced <- elev.df.tall[elev.df.tall$y %in% (y.vector) & elev.df.tall$x %in% (x.vector),]
 
   # For a density plot, we need each coordinate repeated a number of time proportional to its elevation
   # Creates a data frame for each observation, repeating the the x and y observation elevation*scaling factor times
-  df.list <- lapply(1:nrow(elev.df.tall.reduced), df = elev.df.tall.reduced,
+  df.list <- lapply(1:nrow(elev.df.tall), df = elev.df.tall,
                     FUN = function(X, df){
+                      if (df$elev[X] %in% c(NA, 0)) {
+                        return(NULL)
+                      }
                       current.df <- data.frame(y = df$y[X],
                                                x = df$x[X],
                                                # Applying scaling factor
