@@ -151,7 +151,7 @@ elev.density.df <- function(raster = NULL,
 
   names(elev.df.reduced) <- paste(1:(ncol(elev.df.reduced)))
 
-  elev.df.reduced$y <- 1:nrow(elev.df.reduced)
+  elev.df.reduced$y <- nrow(elev.df.reduced):1
 
   # Gather the frame so that we have an x coordinate variable and an elevation variable
   elev.df.tall <- tidyr::gather(elev.df.reduced,
