@@ -606,3 +606,4 @@ elev.anim.df <- function(raster = NULL,
                        })
 
   return(dataframes)
+}
