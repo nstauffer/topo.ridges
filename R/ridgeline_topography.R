@@ -408,7 +408,7 @@ elev.anim.df <- function(raster = NULL,
   # Read in the extent frame, if there is one
   if (is.null(frame)) {
     if (is.null(frame.path)) {
-      message("No frame provided.")
+      message("No frame provided; using full raster extent.")
     } else {
       if (file.exists(frame.path)) {
         frame <- rgdal::readOGR(dsn = frame.path,
