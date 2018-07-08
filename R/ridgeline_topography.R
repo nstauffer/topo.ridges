@@ -294,7 +294,8 @@ topo.ridges.plot <- function(data,
 #' @param fill Character string. The color for the background of the plot. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{geom_density_ridges(fill)} and \code{theme(panel.background = element_rect(fill))}. Defaults to \code{"light blue"}.
 #' @param line.gradient.start Character string. The color for the foreground ridgeline of the plot. Used as the start of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(low)}. Defaults to \code{"white"}.
 #' @param line.gradient.end Character string. The color for the backmost ridgeline of the plot. Used as the end of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(high)}. Defaults to \code{"white"}.
-#' @param invert.y Logical. If \code{TRUE} then all y values will by multiplied by -1. Defaults to \code{TRUE}.
+#' @param invert.y Logical. If \code{FALSE} then all y values will by multiplied by -1. Defaults to \code{FALSE}.
+#' @param invert.y Logical. If \code{FALSE} then all y values will by multiplied by -1. Defaults to \code{FALSE}.
 #' @return A ggplot object.
 #' @export
 topo.ridges <- function(raster = NULL,
@@ -311,7 +312,8 @@ topo.ridges <- function(raster = NULL,
                         fill = "light blue",
                         line.gradient.start = "white",
                         line.gradient.end = "white",
-                        invert.y = TRUE) {
+                        invert.y = FALSE,
+                        invert.x = FALSE) {
 
   # Create the data frame to plot
   df.long <- elev.density.df(raster = raster,
@@ -334,7 +336,8 @@ topo.ridges <- function(raster = NULL,
                            fill = fill,
                            line.gradient.start = line.gradient.start,
                            line.gradient.end = line.gradient.end,
-                           invert.y = invert.y)
+                           invert.y = invert.y,
+                           invert.x = invert.x)
 
   return(plot)
 }
