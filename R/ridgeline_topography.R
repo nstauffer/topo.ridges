@@ -218,7 +218,7 @@ topo.ridges.plot <- function(data,
                              # gradient.midpoint = NULL,
                              invert.y = FALSE,
                              invert.x = FALSE){
-  if (isFALSE(is.data.frame(data))) {
+  if (!isTRUE(is.data.frame(data))) {
     stop("The data must be a data frame.")
   } else {
     if (!(x.variable %in% names(data)) | !(y.variable %in% names(data))) {
