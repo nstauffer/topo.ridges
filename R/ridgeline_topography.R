@@ -78,6 +78,62 @@ kernel_scan <- function(matrix,
 
   return(output_matrix)
 }
+
+ridgemap <- function(elev_df = NULL,
+                     elev_matrix = NULL,
+                     line_color = "gray20",
+                     background_color = "white",
+                     line_count = NULL,
+                     tilt_factor = 75,
+                     scale_factor = 1,
+                     size = 0.5,
+                     min_height = 0){
+  if (is.null(elev_df) & is.null(elev_matrix)) {
+    stop("Provide either elev_df or elev_matrix")
+  }
+
+  if (!is.null(elev_matrix)) {
+    elev_df <- matrix_to_dataframe(elev_matrix)
+  }
+
+
+  if (is.null(line_count)) {
+    plotting_data <- elev_df
+    line_count <- length(unique(elev_df[["y"]]))
+  } else {
+    current_lines <- length(unique(elev_df[["y"]]))
+    y_values <- round((1:line_count) * (current_lines / line_count))
+    plotting_data <- elev_df[elev_df[["y"]] %in% y_values, ]
+    plotting_data[["y"]] <- rep(c(length(unique(plotting_data[["y"]])):1), times = length(unique(plotting_data[["x"]])))
+  }
+
+  ridge_map <- ggplot2::ggplot(plotting_data) +
+    ggridges::geom_ridgeline(ggplot2::aes(x = x,
+                                          y = y * tilt_factor,
+                                          group = y,
+                                          height = elev),
+                             min_height = min_height,
+                             scale = scale_factor,
+                             color = line_color,
+                             size = size,
+                             fill = background_color) +
+    ggplot2::theme(plot.background = ggplot2::element_rect(fill = background_color),
+                   panel.background = ggplot2::element_rect(fill = background_color,
+                                                            color = background_color),
+                   panel.border = ggplot2::element_blank(),
+                   panel.grid = ggplot2::element_blank(),
+                   panel.spacing = ggplot2::unit(c(0,0,0,0),"mm"),
+                   axis.line = ggplot2::element_blank(),
+                   axis.title = ggplot2::element_blank(),
+                   axis.ticks = ggplot2::element_blank(),
+                   axis.text = ggplot2::element_blank(),
+                   plot.margin = ggplot2::unit(c(0,0,0,0),"mm"),
+                   legend.position = "none") +
+    ggplot2::labs(x = NULL,
+                  y = NULL)
+
+  return(ridge_map)
+}
 #' Convert an elevation raster to a data frame suitable for density plotting
 #' @description Creates a long/tall data frame from an elevation raster. Each coordinate pair is repeated the according to its relative elevation within the raster, e.g. if the minimum elevation is 100 and the maximum is 200, coordinates with an elevation of 100 will be repeated once and those with an elevation of 200 will be repeated 100 times.
 #' @param raster Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.
