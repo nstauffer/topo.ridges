@@ -10,6 +10,74 @@ matrix_to_dataframe <- function(matrix){
 
   return(df_tall)
 }
+
+# Note that the kernel is rectangular
+kernel_scan <- function(matrix,
+                        search_distance_x = 50,
+                        search_distance_y = 20,
+                        search_value_min = 10,
+                        search_value_max = Inf,
+                        return_value = 1.5) {
+  n_row <- nrow(matrix)
+  n_col <- ncol(matrix)
+
+  min_y_vector <- sapply(X = 1:n_row,
+                         search_distance = search_distance_y,
+                         FUN = function(X, search_distance){
+                           max(1, X - search_distance)
+                         })
+  max_y_vector <- sapply(X = 1:n_row,
+                         max = n_row,
+                         search_distance = search_distance_y,
+                         FUN = function(X, max, search_distance){
+                           min(max, X + search_distance)
+                         })
+
+  min_x_vector <- sapply(X = 1:n_col,
+                         search_distance = search_distance_x,
+                         FUN = function(X, search_distance){
+                           max(1, X - search_distance)
+                         })
+  max_x_vector <- sapply(X = 1:n_col,
+                         max = n_col,
+                         search_distance = search_distance_x,
+                         FUN = function(X, max, search_distance){
+                           min(max, X + search_distance)
+                         })
+
+  df <- data.frame(x = unlist(lapply(X = 1:n_col, times = n_row, FUN = rep)),
+                   y = rep(1:n_row, times = n_col),
+                   min_x = unlist(lapply(X = min_x_vector, times = n_row, FUN = rep)),
+                   max_x = unlist(lapply(X = max_x_vector, times = n_row, FUN = rep)),
+                   min_y = rep(min_y_vector, times = n_col),
+                   max_y = rep(max_y_vector, times = n_col))
+
+
+  check_vector <- sapply(X = 1:nrow(df),
+                         df = df,
+                         matrix = matrix,
+                         search_value_max = search_value_max,
+                         search_value_min = search_value_min,
+                         FUN = function(X, df, matrix, search_value_max, search_value_min){
+                           current_value <- matrix[df[X, "y"], df[X, "x"]]
+                           if (current_value >= search_value_min & current_value <= search_value_max) {
+                             result <- FALSE
+                           } else {
+                             x_range <- df[X, "min_x"]:df[X, "max_x"]
+                             y_range <- df[X, "min_y"]:df[X, "max_y"]
+                             current_matrix <- matrix[y_range, x_range]
+                             result <- any(current_matrix >= search_value_min & current_matrix <= search_value_max)
+                           }
+                           return(result)
+                         })
+
+  output_vector <- rep(0, times = length(check_vector))
+  output_vector[check_vector] <- return_value
+
+  output_matrix <- matrix(output_vector, ncol = n_col)
+
+  return(output_matrix)
+}
 #' Convert an elevation raster to a data frame suitable for density plotting
 #' @description Creates a long/tall data frame from an elevation raster. Each coordinate pair is repeated the according to its relative elevation within the raster, e.g. if the minimum elevation is 100 and the maximum is 200, coordinates with an elevation of 100 will be repeated once and those with an elevation of 200 will be repeated 100 times.
 #' @param raster Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.
