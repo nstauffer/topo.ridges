@@ -1,3 +1,15 @@
+matrix_to_dataframe <- function(matrix){
+  df <- as.data.frame(matrix)
+  names(df) <- paste(1:ncol(df))
+  df[["y"]] <- nrow(df):1
+  df_tall <- tidyr::gather(df,
+                            key = "x",
+                            value = "elev",
+                            -y)
+  df_tall[["x"]] <- as.numeric(df_tall[["x"]])
+
+  return(df_tall)
+}
 #' Convert an elevation raster to a data frame suitable for density plotting
 #' @description Creates a long/tall data frame from an elevation raster. Each coordinate pair is repeated the according to its relative elevation within the raster, e.g. if the minimum elevation is 100 and the maximum is 200, coordinates with an elevation of 100 will be repeated once and those with an elevation of 200 will be repeated 100 times.
 #' @param raster Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.
