@@ -4,9 +4,18 @@
 \alias{topo.ridges.plot}
 \title{Create a ridgeline plot from a data frame of relative coordinates}
 \usage{
-topo.ridges.plot(data, x.variable = "x", y.variable = "y", scale = 1,
-  size = 1, fill = "light blue", line.gradient.start = "white",
-  line.gradient.end = "white", invert.y = FALSE, invert.x = FALSE)
+topo.ridges.plot(
+  data,
+  x.variable = "x",
+  y.variable = "y",
+  scale = 1,
+  size = 1,
+  fill = "light blue",
+  line.gradient.start = "white",
+  line.gradient.end = "white",
+  invert.y = FALSE,
+  invert.x = FALSE
+)
 }
 \arguments{
 \item{data}{Data frame. Must contain variables corresponding to relative coordinates of elevation data. Each observation of a coordinate pair must appear in the data frame a number of times equal to its relative elevation, e.g. a coordinate pair that is twice as high as another should occur two times as many times in the data frame.}

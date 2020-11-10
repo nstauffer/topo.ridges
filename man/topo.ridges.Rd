@@ -4,11 +4,24 @@
 \alias{topo.ridges}
 \title{Create a ridgeline plot from an elevation raster}
 \usage{
-topo.ridges(raster = NULL, raster.path = NULL, frame = NULL,
-  frame.path = NULL, n.ridges = 50, x.resolution = 1, n.x = NULL,
-  elev.scale = 0.1, na.sub = 0, scale = 15, size = 1,
-  fill = "light blue", line.gradient.start = "white",
-  line.gradient.end = "white", invert.y = TRUE)
+topo.ridges(
+  raster = NULL,
+  raster.path = NULL,
+  frame = NULL,
+  frame.path = NULL,
+  n.ridges = 50,
+  x.resolution = 1,
+  n.x = NULL,
+  elev.scale = 0.1,
+  na.sub = 0,
+  scale = 15,
+  size = 1,
+  fill = "light blue",
+  line.gradient.start = "white",
+  line.gradient.end = "white",
+  invert.y = FALSE,
+  invert.x = FALSE
+)
 }
 \arguments{
 \item{raster}{Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.}
@@ -39,7 +52,7 @@ topo.ridges(raster = NULL, raster.path = NULL, frame = NULL,
 
 \item{line.gradient.end}{Character string. The color for the backmost ridgeline of the plot. Used as the end of an auto-generated color gradient through to the backmost ridgeline. Must be a color that ggplot can recognize (either the color name or hexadecimal); passed to \code{scale_color_continuous(high)}. Defaults to \code{"white"}.}
 
-\item{invert.y}{Logical. If \code{TRUE} then all y values will by multiplied by -1. Defaults to \code{TRUE}.}
+\item{invert.y}{Logical. If \code{FALSE} then all y values will by multiplied by -1. Defaults to \code{FALSE}.}
 }
 \value{
 A ggplot object.

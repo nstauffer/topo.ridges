@@ -2,5 +2,6 @@
 
 export(elev.anim.df)
 export(elev.density.df)
+export(matrix_to_dataframe)
 export(topo.ridges)
 export(topo.ridges.plot)

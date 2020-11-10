@@ -4,10 +4,21 @@
 \alias{elev.anim.df}
 \title{Convert an elevation raster to a sequence of data frames suitable for density plotting}
 \usage{
-elev.anim.df(raster = NULL, raster.path = NULL, frame = NULL,
-  frame.path = NULL, y.resolution = 1, n.y = NULL, x.resolution = 1,
-  n.x = NULL, elev.scale = 1, na.sub = 0, n.frames = 30,
-  perfect.loop = FALSE, loop.adjustment = "equal")
+elev.anim.df(
+  raster = NULL,
+  raster.path = NULL,
+  frame = NULL,
+  frame.path = NULL,
+  y.resolution = 1,
+  n.y = NULL,
+  x.resolution = 1,
+  n.x = NULL,
+  elev.scale = 1,
+  na.sub = 0,
+  n.frames = 30,
+  perfect.loop = FALSE,
+  loop.adjustment = "equal"
+)
 }
 \arguments{
 \item{raster}{Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.}

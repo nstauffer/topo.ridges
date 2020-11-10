@@ -4,9 +4,18 @@
 \alias{elev.density.df}
 \title{Convert an elevation raster to a data frame suitable for density plotting}
 \usage{
-elev.density.df(raster = NULL, raster.path = NULL, frame = NULL,
-  frame.path = NULL, y.resolution = 1, n.y = NULL, x.resolution = 1,
-  n.x = NULL, elev.scale = 1, na.sub = 0)
+elev.density.df(
+  raster = NULL,
+  raster.path = NULL,
+  frame = NULL,
+  frame.path = NULL,
+  y.resolution = 1,
+  n.y = NULL,
+  x.resolution = 1,
+  n.x = NULL,
+  elev.scale = 1,
+  na.sub = 0
+)
 }
 \arguments{
 \item{raster}{Raster object. The elevation raster to use. If not provided, then a raster will be read in from \code{raster.path}. Defaults to \code{NULL}.}
