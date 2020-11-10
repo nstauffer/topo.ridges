@@ -28,6 +28,8 @@ matrix_to_dataframe <- function(matrix){
   return(df_tall)
 }
 
+#' Return values from a kernel applied to a matrix
+#' @description Specify the dimensions of a rectangular kernel to scan the given matrix with
 # Note that the kernel is rectangular
 kernel_scan <- function(matrix,
                         search_distance_x = 50,
