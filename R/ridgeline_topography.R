@@ -115,15 +115,31 @@ ridgemap <- function(elev_df = NULL,
     elev_df <- matrix_to_dataframe(elev_matrix)
   }
 
+  current_lines <- length(unique(elev_df[["y"]]))
 
   if (is.null(line_count)) {
     plotting_data <- elev_df
-    line_count <- length(unique(elev_df[["y"]]))
+    line_count <- current_lines
   } else {
-    current_lines <- length(unique(elev_df[["y"]]))
-    y_values <- round((1:line_count) * (current_lines / line_count))
-    plotting_data <- elev_df[elev_df[["y"]] %in% y_values, ]
-    plotting_data[["y"]] <- rep(c(length(unique(plotting_data[["y"]])):1), times = length(unique(plotting_data[["x"]])))
+    if (line_count > current_lines) {
+      plotting_data <- elev_df
+      line_count <- current_lines
+      warning("Only ", current_lines, " lines of latitude available.")
+    } else {
+      y_values <- round((1:line_count) * (current_lines / line_count))
+      plotting_data <- elev_df[elev_df[["y"]] %in% y_values, ]
+      # I don't know whether it'll be runs of x values or runs of y values
+      # So, if the first two y values are the same, assume all y values are in runs
+      if (elev_df[["y"]][1] == elev_df[["y"]][2]) {
+        plotting_data[["y"]] <- as.vector(sapply(X = length(unique(plotting_data[["y"]])):1,
+                                                 times = length(unique(plotting_data[["x"]])),
+                                                 FUN = function(X, times){
+                                                   rep(X, times = times)
+                                                 }))
+      } else {
+        plotting_data[["y"]] <- rep(c(length(unique(plotting_data[["y"]])):1), times = length(unique(plotting_data[["x"]])))
+      }
+    }
   }
 
   ridge_map <- ggplot2::ggplot(plotting_data) +
