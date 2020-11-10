@@ -1,12 +1,29 @@
+#' Convert a matrix to a data frame
+#' @description Convert a matrix of elevation data where columns represent the x component and rows represent the y to a data frame
+#' @param matrix The matrix of elevation values to be converted
+#' @return A data frame with the variables "x", "y", and "elev"
+#' @export
 matrix_to_dataframe <- function(matrix){
-  df <- as.data.frame(matrix)
-  names(df) <- paste(1:ncol(df))
+  df <-as.data.frame(matrix)
   df[["y"]] <- nrow(df):1
-  df_tall <- tidyr::gather(df,
-                            key = "x",
-                            value = "elev",
-                            -y)
-  df_tall[["x"]] <- as.numeric(df_tall[["x"]])
+  df_tall <- tidyr::pivot_longer(data = df,
+                                      cols = tidyr::matches("[^y]"),
+                                      names_to = "x",
+                                      values_to = "elev")
+  df_tall[["x"]] <- as.numeric(gsub(df_tall[["x"]],
+                                         pattern = "[A-z]",
+                                         replacement = ""))
+
+  # df <- as.data.frame(matrix)
+  # names(df) <- paste(1:ncol(df))
+  # df[["y"]] <- as.numeric(nrow(df):1)
+  # df_tall <- tidyr::pivot_longer(data = df,
+  #                                cols = dplyr::matches("[^y]"),
+  #                                names_to = "x",
+  #                                values_to = "elev"#,
+  #                                #-y)
+  # )
+  # df_tall[["x"]] <- as.numeric(df_tall[["x"]])
 
   return(df_tall)
 }
