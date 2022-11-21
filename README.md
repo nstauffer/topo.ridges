@@ -4,47 +4,55 @@
 
 ### Example
 ```r
-library(topo.ridges)
+#### Read in data ####
+# Read in the raster
+elev_raster <- raster::raster("path/to/raster.tif")
 
-## Create a data frame of coordinates from a raster and a polygon shapefile to crop it
-# The only arguments you MUST provide values for are raster/raster.path, if there's no cropping to be done
-# This is for a state park within a raster of a mountain range
-elev.df <- elev.density.df(raster.path = "rasters/mountain_range.tif",
-                           frame.path = "shapefiles/state_park.shp",
-                           # I'm not taking just a proportion of the latitude lines
-                           y.resolution = 1,
-                           # I am however only taking an equally-spaced 50 latitude lines to plot
-                           n.y = 50,
-                           # I'm not dropping any longitudinal lines
-                           x.resolution = 1,
-                           n.x = NULL,
-                           # Because I can amp up the scaling when plotting, I'm halving the relative elevation values
-                           # This will also reduce the output data frame length by half
-                           elev.scale = 0.5,
-                           # Wherever there are NA values in my raster, replace them with 0
-                           na.sub = 0)
-                           
-## Convert a data frame of coordinates into a ridgeline plot
-# Again, the only REQUIRED argument is the data
-plot <- topo.ridges.plot(data = elev.df,
-                         # The x and y variables in my data frame are called "x" and "y"
-                         x.variable = "x",
-                         y.variable = "y",
-                         # Exaggerate the elevation by a factor of 10 to make it pop
-                         scale = 10,
-                         # Use a line weight of 1
-                         size = 1,
-                         # Make the backdrop black
-                         fill = "black",
-                         # Color the lines with a gradient, getting slightly darker in back
-                         line.gradient.start = "white",
-                         line.gradient.end = "gray90",
-                         # For some reason, sometimes the y values from elev.density.raster() are inverted? This will let you correct that
-                         invert.y = TRUE)
+#### Crop the raster (optional) ####
+# Grab the current extent of the raster
+frame_extent <- raster::extent(elev_raster)
 
-## Write out the plot
-# I usually write out plots as .SVG files and convert to .PNG for smoother lines
-# But! Direct to .PNG works fine
-ggplot2::ggsave("figures/example_topo_plot.png",
-                device = "png")
+# Manually change the extent here to include only what should be mapped
+# Make sure you're using the correct units for your raster!
+frame_extent@xmax <- -106.46
+frame_extent@xmin <- -106.62
+frame_extent@ymax <- 32.42
+frame_extent@ymin <- 32.18
+
+# Crop the raster to the new extent
+elev_raster_crop <- raster::crop(x = elev_raster,
+                                 y = frame_extent)
+
+# Check to see that looks right
+# Adjust your new frame extent and recrop if it doesn't
+raster::plot(elev_raster_crop)
+
+#### Raster aggregation (optional) ####
+# Reduce the resolution of the raster
+# This isn't necessary but can make a huge difference for processing time
+# This example uses fact = 2 and so the result has 1/2 the cells of the original
+elev_raster_lowres <- raster::aggregate(elev_raster_crop,
+                                        fact = 2)
+
+#### Create and save the map ####
+# This will reformat the data as necessary and create the ggplot object to save
+# See the documentation for explanations of the arguments
+map <- topo.ridges::ridgemap(elev_data = elev_raster_lowres,
+                             line_color = "white",
+                             background_color = "gray10",
+                             line_count = 300,
+                             y_scalar = 75,
+                             scale_factor = 1.25,
+                             line_weight = 0.5,
+                             min_height = 0)
+
+# This saves a square version of the map as an SVG
+# If you change the device argument to something like "png"" don't forget to
+# also change the extension in the filename
+ggsave(filename = "map.svg",
+       path = "output/path/here",
+       plot = map,
+       device = "svg",
+       width = 10,
+       height = 10)
 ```
