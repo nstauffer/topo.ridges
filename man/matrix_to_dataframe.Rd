@@ -7,11 +7,11 @@
 matrix_to_dataframe(matrix)
 }
 \arguments{
-\item{matrix}{The matrix of elevation values to be converted}
+\item{matrix}{The matrix of elevation values to be converted.}
 }
 \value{
-A data frame with the variables "x", "y", and "elev"
+A data frame with the variables "x", "y", and "elev".
 }
 \description{
-Convert a matrix of elevation data where columns represent the x component and rows represent the y to a data frame
+Convert a matrix of elevation data where columns represent the x component and rows represent the y to a data frame.
 }
