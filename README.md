@@ -2,6 +2,8 @@
 ## Create Topographic Maps With Density Ridgelines In R
 This package is absolutely not on CRAN so you can install it using `devtools::install_github("nstauffer/topo.ridges")`.
 
+If you're looking for freely-available elevation data in North America, check out the [USDA NRCS Geospatial Data Gateway](https://datagateway.nrcs.usda.gov/).
+
 ### Example
 ```r
 #### Read in data ####
