@@ -7,11 +7,10 @@ Description: Convert elevation rasters into data frames of coordinates suitable 
 License: MIT License
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.2
 Imports:
   tidyr,
   dplyr,
   ggplot2,
   ggridges,
-  sp,
-  rgdal
+  raster
