@@ -70,32 +70,31 @@ kernel_scan <- function(matrix,
                    max_x = unlist(lapply(X = max_x_vector, times = n_row, FUN = rep)),
                    min_y = rep(min_y_vector, times = n_col),
                    max_y = rep(max_y_vector, times = n_col))
+#' Convert an elevation raster to a data frame
+#' @description Convert a raster where cell values correspond to elevation to a data frame where each cell is an observation with the variables "x", "y", and "elev".
+#' @param elev_raster The elevation raster to convert.
+#' @return A data frame with the variables "x", "y", and "elev".
+#' @export
+raster_to_dataframe <- function(elev_raster){
+  if (!("RasterLayer" %in% class(elev_raster))) {
+    stop("elev_raster must be a raster.")
+  }
 
+  # First step is a matrix
+  elev_matrix <- raster::as.matrix(elev_raster)
 
-  check_vector <- sapply(X = 1:nrow(df),
-                         df = df,
-                         matrix = matrix,
-                         search_value_max = search_value_max,
-                         search_value_min = search_value_min,
-                         FUN = function(X, df, matrix, search_value_max, search_value_min){
-                           current_value <- matrix[df[X, "y"], df[X, "x"]]
-                           if (current_value >= search_value_min & current_value <= search_value_max) {
-                             result <- FALSE
-                           } else {
-                             x_range <- df[X, "min_x"]:df[X, "max_x"]
-                             y_range <- df[X, "min_y"]:df[X, "max_y"]
-                             current_matrix <- matrix[y_range, x_range]
-                             result <- any(current_matrix >= search_value_min & current_matrix <= search_value_max)
-                           }
-                           return(result)
-                         })
+  # Zero out NA values
+  elev_matrix[is.na(elev_matrix)] <- 0
 
-  output_vector <- rep(0, times = length(check_vector))
-  output_vector[check_vector] <- return_value
+  # Normalize the values
+  elev_min <- min(elev_matrix)
+  elev_matrix <- elev_matrix - elev_min
+  elev_matrix[elev_matrix < 0] <- 0
 
-  output_matrix <- matrix(output_vector, ncol = n_col)
+  # Convert from matrix to data frame
+  elev_dataframe <- matrix_to_dataframe(elev_matrix)
 
-  return(output_matrix)
+  elev_dataframe
 }
 
 ridgemap <- function(elev_df = NULL,
