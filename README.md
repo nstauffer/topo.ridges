@@ -1,4 +1,6 @@
 # topo.ridges
+![An example map of a valley.](examples/coachella_white_on_black_width12_height8.png)
+
 ## Create Topographic Maps With Density Ridgelines In R
 This package is absolutely not on CRAN so you can install it using `devtools::install_github("nstauffer/topo.ridges")`.
 
