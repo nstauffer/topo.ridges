@@ -24,8 +24,6 @@ ridgemap(
 
 \item{line_count}{Optional numeric. The number of ridgelines to draw. If this is \code{NULL} or greater than or equal to the number of available latitude lines in the data, all possible lines will be drawn. If it is fewer than the available latitudes, only this many lines will be drawn, using an evenly-spaced subset of the data. Defaults to \code{NULL}.}
 
-\item{y_scalar}{Numeric. The scalar to multiply all y values by. Larger values can help if your ridgelines are squashed at the bottom of your map. Defaults to \code{75}.}
-
 \item{scale_factor}{Numeric. The vertical scaling factor to apply to the elevations in the plot. Larger values result in more exaggerated topography. Defaults to \code{1}.}
 
 \item{line_weight}{Numeric. The thickness of the ridgelines. Used as the \code{size} argument in the \code{geom_ridges()} call. Defaults to \code{0.5}.}
