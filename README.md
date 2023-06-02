@@ -51,7 +51,7 @@ map <- topo.ridges::ridgemap(elev_data = elev_raster_lowres,
                              min_height = 0)
 
 # This saves a square version of the map as an SVG
-# If you change the device argument to something like "png"" don't forget to
+# If you change the device argument to something like "png" don't forget to
 # also change the extension in the filename
 ggsave(filename = "map.svg",
        path = "output/path/here",
